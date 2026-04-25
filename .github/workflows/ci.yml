@@ -1,0 +1,22 @@
+name: Item Service CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  sast-scan:
+    uses: Shareify-Project/shareify-workflows/.github/workflows/sast.yml@main
+    secrets: inherit
+
+  sca-scan:
+    needs: sast-scan
+    uses: Shareify-Project/shareify-workflows/.github/workflows/sca.yml@main
+    secrets: inherit
+
+  build-and-push:
+    needs: sca-scan
+    uses: Shareify-Project/shareify-workflows/.github/workflows/build-and-push.yml@main
+    with:
+      image_name: shareify-item-service
+    secrets: inherit
