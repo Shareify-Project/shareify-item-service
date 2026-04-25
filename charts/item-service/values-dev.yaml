@@ -1,0 +1,16 @@
+# values-dev.yaml
+replicaCount: 1
+resources:
+  requests:
+    cpu: 10m
+    memory: 16Mi
+---
+# values-prod.yaml
+replicaCount: 2
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
