@@ -16,6 +16,9 @@ jobs:
 
   build-and-push:
     needs: sca-scan
+    permissions:
+      contents: read
+      packages: write
     uses: Shareify-Project/shareify-workflows/.github/workflows/build-and-push.yml@main
     with:
       image_name: shareify-item-service
