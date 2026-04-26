@@ -4,13 +4,3 @@ metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}-config
 data:
   DATABASE_PATH: {{ .Values.env.databasePath | quote }}
----
-# values-dev.yaml
-replicaCount: 1
----
-# values-prod.yaml
-replicaCount: 2
-resources:
-  limits:
-    cpu: 200m
-    memory: 256Mi
