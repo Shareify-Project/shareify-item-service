@@ -5,6 +5,8 @@ image:
   tag: "latest"
 imagePullSecrets:
   - name: ghcr-secret
+env:
+  databasePath: "/app/data/item.db"
 service:
   type: ClusterIP
   port: 80
