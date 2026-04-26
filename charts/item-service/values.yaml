@@ -1,18 +1,22 @@
-imagePullSecrets:
-  - name: ghcr-secret
 replicaCount: 1
 image:
   repository: ghcr.io/shareify-project/shareify-item-service
-  pullPolicy: IfNotPresent
-  tag: latest
+  pullPolicy: Always
+  tag: "latest"
+imagePullSecrets:
+  - name: ghcr-secret
 service:
   type: ClusterIP
-  port: 8000
+  port: 80
 persistence:
+  enabled: true
+  storageClass: "nfs-client"
   size: 1Gi
-  storageClass: "csi-standard"
-  mountPath: /data
-env:
-  databasePath: "/data/items.db"
-
-
+  mountPath: /app/data
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 16Mi
