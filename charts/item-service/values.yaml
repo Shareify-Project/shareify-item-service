@@ -1,8 +1,8 @@
 replicaCount: 1
 image:
-  repository: mvnsakash/shareify-item-service
+  repository: ghcr.io/shareify-project/shareify-item-service
   pullPolicy: IfNotPresent
-  tag: "v1.1.6"
+  tag: "v1.1.1"
 service:
   type: ClusterIP
   port: 8000
