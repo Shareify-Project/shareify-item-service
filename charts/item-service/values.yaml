@@ -4,7 +4,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/shareify-project/shareify-item-service
   pullPolicy: IfNotPresent
-  tag: "v1.1.1"
+  tag: latest
 service:
   type: ClusterIP
   port: 8000
@@ -14,3 +14,4 @@ persistence:
   mountPath: /data
 env:
   databasePath: "/data/items.db"
+
