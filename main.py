@@ -7,7 +7,8 @@ Shareify Item Service
 
 import os
 import uuid
-import sqlite3
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, Depends, Query
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -28,9 +29,7 @@ security = HTTPBearer()
 
 # ── Database ────────────────────────────────────────────────────────────────
 def get_db():
-    os.makedirs(os.path.dirname(DATABASE) or ".", exist_ok=True)
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
 
 def init_db():
@@ -172,3 +171,4 @@ def delete_item(item_id: str, payload: dict = Depends(verify_token)):
 @app.get("/health")
 def health():
     return {"status": "healthy", "service": "shareify-item-service"}
+
