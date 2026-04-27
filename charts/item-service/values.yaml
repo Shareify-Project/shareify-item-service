@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/shareify-project/shareify-item-service
   pullPolicy: Always
-  tag: "742c2c5"
+  tag: "latest"
 imagePullSecrets:
   - name: ghcr-secret
 env:
@@ -25,6 +25,7 @@ resources:
 
 config: {}
 secrets: {}
+
 
 
 
