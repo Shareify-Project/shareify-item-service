@@ -18,13 +18,13 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          ports:
+                    ports:
+            - containerPort: {{ .Values.service.port }}
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-{{ .Chart.Name }}-config
             - secretRef:
                 name: {{ .Release.Name }}-{{ .Chart.Name }}-secret
-            - containerPort: {{ .Values.service.port }}
           volumeMounts:
             - name: data
               mountPath: {{ .Values.persistence.mountPath }}
@@ -52,4 +52,5 @@ spec:
     - port: {{ .Values.service.port }}
   selector:
     app: {{ .Chart.Name }}
+
 
