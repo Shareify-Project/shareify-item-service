@@ -50,16 +50,4 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistence.size }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Chart.Name }}
-spec:
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.port }}
-      protocol: TCP
-  selector:
-    app: {{ .Chart.Name }}
 
