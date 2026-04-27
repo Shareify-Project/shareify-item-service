@@ -19,6 +19,11 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-{{ .Chart.Name }}-config
+            - secretRef:
+                name: {{ .Release.Name }}-{{ .Chart.Name }}-secret
             - containerPort: {{ .Values.service.port }}
           volumeMounts:
             - name: data
@@ -39,6 +44,12 @@ metadata:
   name: {{ .Chart.Name }}
 spec:
   ports:
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-{{ .Chart.Name }}-config
+            - secretRef:
+                name: {{ .Release.Name }}-{{ .Chart.Name }}-secret
     - port: {{ .Values.service.port }}
   selector:
     app: {{ .Chart.Name }}
+

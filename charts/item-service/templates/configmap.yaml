@@ -3,4 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}-config
 data:
-  DATABASE_PATH: {{ .Values.env.databasePath | quote }}
+  DATABASE_PATH: {{ .Values.env.databasePath | default "/app/data/db.db" | quote }}
+  {{- if .Values.config }}
+  {{- toYaml .Values.config | nindent 2 }}
+  {{- end }}
