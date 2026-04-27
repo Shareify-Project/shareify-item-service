@@ -17,6 +17,15 @@ spec:
         fsGroup: 1000
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+            initContainers:
+        - name: fix-permissions
+          image: alpine
+          command: ["sh", "-c", "chown -R 1000:1000 /app/data"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -63,3 +72,4 @@ spec:
       protocol: TCP
   selector:
     app: {{ .Chart.Name }}
+
