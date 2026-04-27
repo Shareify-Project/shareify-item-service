@@ -21,7 +21,7 @@ app = FastAPI(title="Shareify Item Service", version="1.1.0")
 # ── Config ──────────────────────────────────────────────────────────────────
 SECRET_KEY = os.getenv("JWT_SECRET", "shareify-secret-key-2024")
 ALGORITHM = "HS256"
-DATABASE = os.getenv("DATABASE_PATH", "./data/items.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:shareify-secure-db-pass@postgres-db:5432/item_service")
 INVENTORY_SERVICE_URL = os.getenv("INVENTORY_SERVICE_URL", "http://localhost:8003")
 
 VALID_CATEGORIES = ["Electronics", "Furniture", "Kitchen", "Tools"]
@@ -171,4 +171,5 @@ def delete_item(item_id: str, payload: dict = Depends(verify_token)):
 @app.get("/health")
 def health():
     return {"status": "healthy", "service": "shareify-item-service"}
+
 
