@@ -13,7 +13,7 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
-            securityContext:
+      securityContext:
         fsGroup: 1000
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
@@ -63,4 +63,3 @@ spec:
       protocol: TCP
   selector:
     app: {{ .Chart.Name }}
-
