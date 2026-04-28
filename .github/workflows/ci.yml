@@ -3,6 +3,7 @@ name: Item Service CI Pipeline
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   sast-scan:
@@ -23,4 +24,5 @@ jobs:
     with:
       image_name: shareify-item-service
     secrets: inherit
+
 
