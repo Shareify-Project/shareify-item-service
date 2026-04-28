@@ -11,6 +11,10 @@ spec:
     metadata:
       labels:
         app: {{ .Chart.Name }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8000"
     spec:
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
@@ -36,3 +40,4 @@ spec:
                 name: {{ .Release.Name }}-{{ .Chart.Name }}-config
             - secretRef:
                 name: {{ .Release.Name }}-{{ .Chart.Name }}-secret
+
