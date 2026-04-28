@@ -18,13 +18,14 @@ persistence:
 resources:
   limits:
     cpu: 100m
-    memory: 128Mi
+    memory: 256Mi
   requests:
     cpu: 10m
-    memory: 16Mi
+    memory: 64Mi
 
 config: {}
 secrets: {}
+
 
 
 
