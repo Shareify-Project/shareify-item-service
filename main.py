@@ -17,19 +17,17 @@ import jwt
 import httpx
 
 app = FastAPI(title="Shareify Item Service", version="1.1.0")
-# -- POSTGRESQL HOTFIX: SQLite Polyfill --------------------------------------
-# Automatically translates SQLite conn.execute() and '?' to PostgreSQL syntax
+# --
+# -- POSTGRESQL HOTFIX: SQLite Polyfill Helper -------------------------------
 import psycopg2
-from psycopg2.extensions import connection
+from psycopg2.extras import RealDictCursor
 
-def _sqlite_to_psycopg2_execute(self, query, vars=None):
+def db_execute(conn, query, vars=None):
     if '?' in query:
         query = query.replace('?', '%s')
-    cursor = self.cursor()
+    cursor = conn.cursor()
     cursor.execute(query, vars)
     return cursor
-
-connection.execute = _sqlite_to_psycopg2_execute
 # ----------------------------------------------------------------------------
 import time
 from fastapi import Request
@@ -76,7 +74,7 @@ def get_db():
 def init_db():
     conn = get_db()
     # Using IF NOT EXISTS and adding image_url column
-    conn.execute("""
+    db_execute(conn, """
         CREATE TABLE IF NOT EXISTS items (
             item_id TEXT PRIMARY KEY,
             owner_id TEXT NOT NULL,
@@ -89,7 +87,7 @@ def init_db():
     """)
     # Migration: Add image_url column if it doesn't exist (for existing DBs)
     try:
-        conn.execute("ALTER TABLE items ADD COLUMN image_url TEXT")
+        db_execute(conn, "ALTER TABLE items ADD COLUMN image_url TEXT")
     except sqlite3.OperationalError:
         pass # Already exists
         
@@ -134,7 +132,7 @@ def add_item(item: ItemCreate, payload: dict = Depends(verify_token)):
     owner_id = payload["user_id"]
     conn = get_db()
     try:
-        conn.execute(
+        db_execute(conn, 
             "INSERT INTO items (item_id, owner_id, title, category, price_per_day, image_url, created_at) "
             "VALUES (?, ?, ?, ?, ?, ?, ?)",
             (item_id, owner_id, item.title, item.category, item.price_per_day, item.image_url,
@@ -167,7 +165,7 @@ def get_items(category: str = Query(None), q: str = Query(None)):
             query += " AND title LIKE ?"
             params.append(f"%{q}%")
             
-        rows = conn.execute(query, params).fetchall()
+        rows = db_execute(conn, query, params).fetchall()
         return [dict(r) for r in rows]
     finally:
         conn.close()
@@ -176,7 +174,7 @@ def get_items(category: str = Query(None), q: str = Query(None)):
 def get_item(item_id: str):
     conn = get_db()
     try:
-        row = conn.execute("SELECT * FROM items WHERE item_id = ?", (item_id,)).fetchone()
+        row = db_execute(conn, "SELECT * FROM items WHERE item_id = ?", (item_id,)).fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Item not found")
         return dict(row)
@@ -189,14 +187,14 @@ def delete_item(item_id: str, payload: dict = Depends(verify_token)):
     conn = get_db()
     try:
         # Check if item exists and user is owner
-        row = conn.execute("SELECT owner_id FROM items WHERE item_id = ?", (item_id,)).fetchone()
+        row = db_execute(conn, "SELECT owner_id FROM items WHERE item_id = ?", (item_id,)).fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Item not found")
         if row["owner_id"] != user_id:
             raise HTTPException(status_code=403, detail="You can only delete your own items")
 
         # Delete from items table
-        conn.execute("DELETE FROM items WHERE item_id = ?", (item_id,))
+        db_execute(conn, "DELETE FROM items WHERE item_id = ?", (item_id,))
         conn.commit()
 
         # Notify Inventory Service to delete as well
@@ -212,6 +210,7 @@ def delete_item(item_id: str, payload: dict = Depends(verify_token)):
 @app.get("/health")
 def health():
     return {"status": "healthy", "service": "shareify-item-service"}
+
 
 
 
