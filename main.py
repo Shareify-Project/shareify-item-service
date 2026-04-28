@@ -17,6 +17,20 @@ import jwt
 import httpx
 
 app = FastAPI(title="Shareify Item Service", version="1.1.0")
+# -- POSTGRESQL HOTFIX: SQLite Polyfill --------------------------------------
+# Automatically translates SQLite conn.execute() and '?' to PostgreSQL syntax
+import psycopg2
+from psycopg2.extensions import connection
+
+def _sqlite_to_psycopg2_execute(self, query, vars=None):
+    if '?' in query:
+        query = query.replace('?', '%s')
+    cursor = self.cursor()
+    cursor.execute(query, vars)
+    return cursor
+
+connection.execute = _sqlite_to_psycopg2_execute
+# ----------------------------------------------------------------------------
 import time
 from fastapi import Request
 from prometheus_client import make_asgi_app, Counter, Histogram
@@ -198,6 +212,7 @@ def delete_item(item_id: str, payload: dict = Depends(verify_token)):
 @app.get("/health")
 def health():
     return {"status": "healthy", "service": "shareify-item-service"}
+
 
 
 
